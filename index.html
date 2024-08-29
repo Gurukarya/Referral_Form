@@ -5,7 +5,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #e3f2fd; /* Light blue background */
+      background-color: #e3f2fd;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -22,7 +22,7 @@
     }
     .header span {
       font-weight: bold;
-      color: #ff5722; /* Orange color */
+      color: #ff5722;
       font-size: 32px;
     }
     .form-container {
@@ -156,7 +156,7 @@
   </div>
 
   <script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycby69Qwfaf5o8_Nb8vIHzbX1HPRclwSk2Bxx8w6PVNHqOM7mwJG-bvV-6c2aUnrqOEH2ew/exec';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbx9gYclCQYsyd5YjeklF4iNVaCSZ1nPlTc-km6wictZaJMnMEkmPk6Vkfy3tI6fk1bvFg/exec';
 
     document.getElementById('resourceCount').addEventListener('change', function() {
       const resourceCount = parseInt(this.value);
@@ -164,7 +164,7 @@
       tbody.innerHTML = '';  // Clear existing rows
 
       if (resourceCount >= 1 && resourceCount <= 100) {
-        document.getElementById('referenceDetails').style.display = 'block'; // Show Question 5
+        document.getElementById('referenceDetails').style.display = 'block';
 
         for (let i = 0; i < resourceCount; i++) {
           const row = document.createElement('tr');
@@ -205,11 +205,11 @@
           tbody.appendChild(row);
         }
       } else {
-        document.getElementById('referenceDetails').style.display = 'none'; // Hide Question 5 if invalid
+        document.getElementById('referenceDetails').style.display = 'none';
       }
     });
 
-    document.getElementById('referralForm').addEventListener('submit', function(e) {
+    document.getElementById('referralForm').addEventListener('submit', async function(e) {
       e.preventDefault();  // Prevent form submission
 
       const userName = document.getElementById('userName').value.trim();
@@ -217,77 +217,48 @@
       const userLanguage = document.getElementById('userLanguage').value;
       const resourceCount = parseInt(document.getElementById('resourceCount').value);
 
-      let valid = true;
+      const references = [];
+      const referenceRows = document.querySelectorAll('#referenceTable tbody tr');
+      referenceRows.forEach(row => {
+        const name = row.querySelector('input[data-ref^="refName"]').value.trim();
+        const phone = row.querySelector('input[data-ref^="refPhone"]').value.trim();
+        const language = row.querySelector('select[data-ref^="refLang"]').value;
+        if (name && phone && language) {
+          references.push({ name, phone, language });
+        }
+      });
 
-      // Validation for User Name
-      if (!/^[a-zA-Z ]+$/.test(userName)) {
-        document.getElementById('userNameError').textContent = "Numbers and special characters are not allowed";
-        valid = false;
-      } else {
-        document.getElementById('userNameError').textContent = "";
-      }
+      const formData = {
+        userName,
+        mobileNumber,
+        userLanguage,
+        resourceCount,
+        references
+      };
 
-      // Validation for Mobile Number
-      if (!/^[6-9]\d{9}$/.test(mobileNumber)) {
-        document.getElementById('mobileNumberError').textContent = "Please enter a valid Indian mobile number";
-        valid = false;
-      } else {
-        document.getElementById('mobileNumberError').textContent = "";
-      }
-
-      // Validation for Resource Count
-      if (isNaN(resourceCount) || resourceCount < 1 || resourceCount > 100) {
-        document.getElementById('resourceCountError').textContent = "Please enter a number between 1 to 100 only";
-        valid = false;
-      } else {
-        document.getElementById('resourceCountError').textContent = "";
-      }
-
-      // Validation for References
-      if (valid) {
-        const references = getReferences();
-        fetch(scriptUrl, {
+      try {
+        const response = await fetch(scriptUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userName,
-            mobileNumber,
-            userLanguage,
-            resourceCount,
-            references,
-          }),
-        })
-        .then(response => response.text())
-        .then(data => {
-          console.log('Response from server:', data); // Debugging output
-          document.getElementById('submissionSuccess').style.display = 'block';
-          document.getElementById('referralForm').style.display = 'none';
-        })
-        .catch(error => {
-          console.error('Error:', error);
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
         });
+
+        if (response.ok) {
+          document.getElementById('referralForm').reset();
+          document.getElementById('referenceDetails').style.display = 'none';
+          document.getElementById('submissionSuccess').style.display = 'block';
+        } else {
+          alert('Failed to submit the form. Please try again later.');
+        }
+      } catch (error) {
+        console.error('Error submitting the form:', error);
+        alert('An error occurred. Please try again later.');
       }
     });
 
-    function getReferences() {
-      const references = [];
-      const rows = document.getElementById('referenceTable').querySelectorAll('tbody tr');
-      rows.forEach(row => {
-        const refName = row.querySelector('td:nth-child(1) input').value.trim();
-        const refPhone = row.querySelector('td:nth-child(2) input').value.trim();
-        const refLang = row.querySelector('td:nth-child(3) select').value;
-        references.push({ refName, refPhone, refLang });
-      });
-      return references;
-    }
-
     document.getElementById('anotherResponse').addEventListener('click', function() {
-      document.getElementById('referralForm').reset();
-      document.getElementById('referenceDetails').style.display = 'none';
       document.getElementById('submissionSuccess').style.display = 'none';
-      document.getElementById('referralForm').style.display = 'block';
+      document.getElementById('referralForm').reset();
     });
   </script>
 </body>
