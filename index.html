@@ -112,11 +112,9 @@
       <input type="text" id="userName" placeholder="Please enter your name" required>
       <div id="userNameError" class="error"></div>
 
-
       <label for="mobileNumber">Your Mobile Number (registered in Karya app)</label>
       <input type="text" id="mobileNumber" placeholder="Please enter your 10 digit mobile number" required>
       <div id="mobileNumberError" class="error"></div>
-
 
       <label for="userLanguage">Your Language</label>
       <select id="userLanguage" required>
@@ -129,11 +127,9 @@
         <option value="Bengali">Bengali</option>
       </select>
 
-
       <label for="resourceCount">How many resources you can refer?</label>
       <input type="number" id="resourceCount" placeholder="Please enter a number between 1 to 100" min="1" max="100" required>
       <div id="resourceCountError" class="error"></div>
-
 
       <div id="referenceDetails" style="display: none;">
         <label>Please enter your reference details below</label>
@@ -150,10 +146,8 @@
         </table>
       </div>
 
-
       <button type="submit">Submit</button>
     </form>
-
 
     <div id="submissionSuccess" style="display:none;">
       <p>Form submitted successfully.</p>
@@ -161,21 +155,19 @@
     </div>
   </div>
 
-
   <script>
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycby69Qwfaf5o8_Nb8vIHzbX1HPRclwSk2Bxx8w6PVNHqOM7mwJG-bvV-6c2aUnrqOEH2ew/exec';
+
     document.getElementById('resourceCount').addEventListener('change', function() {
       const resourceCount = parseInt(this.value);
       const tbody = document.getElementById('referenceTable').querySelector('tbody');
       tbody.innerHTML = '';  // Clear existing rows
 
-
       if (resourceCount >= 1 && resourceCount <= 100) {
         document.getElementById('referenceDetails').style.display = 'block'; // Show Question 5
 
-
         for (let i = 0; i < resourceCount; i++) {
           const row = document.createElement('tr');
-
 
           const cell1 = document.createElement('td');
           const input1 = document.createElement('input');
@@ -185,7 +177,6 @@
           input1.setAttribute('data-ref', `refName${i}`);
           cell1.appendChild(input1);
 
-
           const cell2 = document.createElement('td');
           const input2 = document.createElement('input');
           input2.type = 'text';
@@ -193,7 +184,6 @@
           input2.required = true;
           input2.setAttribute('data-ref', `refPhone${i}`);
           cell2.appendChild(input2);
-
 
           const cell3 = document.createElement('td');
           const select = document.createElement('select');
@@ -208,11 +198,9 @@
           });
           cell3.appendChild(select);
 
-
           row.appendChild(cell1);
           row.appendChild(cell2);
           row.appendChild(cell3);
-
 
           tbody.appendChild(row);
         }
@@ -221,19 +209,15 @@
       }
     });
 
-
     document.getElementById('referralForm').addEventListener('submit', function(e) {
       e.preventDefault();  // Prevent form submission
-
 
       const userName = document.getElementById('userName').value.trim();
       const mobileNumber = document.getElementById('mobileNumber').value.trim();
       const userLanguage = document.getElementById('userLanguage').value;
       const resourceCount = parseInt(document.getElementById('resourceCount').value);
 
-
       let valid = true;
-
 
       // Validation for User Name
       if (!/^[a-zA-Z ]+$/.test(userName)) {
@@ -243,7 +227,6 @@
         document.getElementById('userNameError').textContent = "";
       }
 
-
       // Validation for Mobile Number
       if (!/^[6-9]\d{9}$/.test(mobileNumber)) {
         document.getElementById('mobileNumberError').textContent = "Please enter a valid Indian mobile number";
@@ -251,7 +234,6 @@
       } else {
         document.getElementById('mobileNumberError').textContent = "";
       }
-
 
       // Validation for Resource Count
       if (isNaN(resourceCount) || resourceCount < 1 || resourceCount > 100) {
@@ -261,7 +243,6 @@
         document.getElementById('resourceCountError').textContent = "";
       }
 
-
       // Validation for References
       if (valid) {
         const rows = document.getElementById('referenceTable').querySelectorAll('tbody tr');
@@ -270,12 +251,10 @@
           const refPhone = row.querySelector('td:nth-child(2) input').value.trim();
           const refLang = row.querySelector('td:nth-child(3) select').value;
 
-
           if (!/^[a-zA-Z ]+$/.test(refName)) {
             valid = false;
             alert(`Reference ${index + 1} Name contains invalid characters`);
           }
-
 
           if (!/^[6-9]\d{9}$/.test(refPhone)) {
             valid = false;
@@ -284,14 +263,31 @@
         });
       }
 
-
       if (valid) {
-        google.script.run.submitForm(userName, mobileNumber, userLanguage, resourceCount, getReferences());
-        document.getElementById('submissionSuccess').style.display = 'block';
-        document.getElementById('referralForm').style.display = 'none';
+        const references = getReferences();
+        fetch(scriptUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userName,
+            mobileNumber,
+            userLanguage,
+            resourceCount,
+            references,
+          }),
+        })
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('submissionSuccess').style.display = 'block';
+          document.getElementById('referralForm').style.display = 'none';
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
       }
     });
-
 
     function getReferences() {
       const references = [];
@@ -305,17 +301,12 @@
       return references;
     }
 
-
     document.getElementById('anotherResponse').addEventListener('click', function() {
       document.getElementById('referralForm').style.display = 'block';
       document.getElementById('referralForm').reset();
       document.getElementById('referenceDetails').style.display = 'none';
       document.getElementById('submissionSuccess').style.display = 'none';
-      document.querySelector('button[type="submit"]').style.backgroundColor = '#1a73e8';
     });
   </script>
 </body>
 </html>
-
-
-
