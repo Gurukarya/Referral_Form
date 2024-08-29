@@ -245,25 +245,6 @@
 
       // Validation for References
       if (valid) {
-        const rows = document.getElementById('referenceTable').querySelectorAll('tbody tr');
-        rows.forEach((row, index) => {
-          const refName = row.querySelector('td:nth-child(1) input').value.trim();
-          const refPhone = row.querySelector('td:nth-child(2) input').value.trim();
-          const refLang = row.querySelector('td:nth-child(3) select').value;
-
-          if (!/^[a-zA-Z ]+$/.test(refName)) {
-            valid = false;
-            alert(`Reference ${index + 1} Name contains invalid characters`);
-          }
-
-          if (!/^[6-9]\d{9}$/.test(refPhone)) {
-            valid = false;
-            alert(`Reference ${index + 1} Phone Number is not valid`);
-          }
-        });
-      }
-
-      if (valid) {
         const references = getReferences();
         fetch(scriptUrl, {
           method: 'POST',
@@ -280,6 +261,7 @@
         })
         .then(response => response.text())
         .then(data => {
+          console.log('Response from server:', data); // Debugging output
           document.getElementById('submissionSuccess').style.display = 'block';
           document.getElementById('referralForm').style.display = 'none';
         })
@@ -302,10 +284,10 @@
     }
 
     document.getElementById('anotherResponse').addEventListener('click', function() {
-      document.getElementById('referralForm').style.display = 'block';
       document.getElementById('referralForm').reset();
       document.getElementById('referenceDetails').style.display = 'none';
       document.getElementById('submissionSuccess').style.display = 'none';
+      document.getElementById('referralForm').style.display = 'block';
     });
   </script>
 </body>
