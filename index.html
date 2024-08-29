@@ -3,151 +3,273 @@
 <head>
   <base target="_top">
   <style>
-    /* Add your CSS styles here */
     body {
       font-family: Arial, sans-serif;
+      background-color: #e3f2fd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+    }
+    .header {
       margin: 20px;
+      text-align: left;
+      width: 100%;
+      max-width: 600px;
     }
-    form {
-      margin-bottom: 20px;
+    .header span {
+      font-weight: bold;
+      color: #ff5722;
+      font-size: 32px;
     }
-    #submissionSuccess {
-      display: none;
-      color: green;
+    .form-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      text-align: left;
+      box-sizing: border-box;
     }
-    #error {
-      display: none;
+    h2 {
+      color: #333;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select, button {
+      padding: 8px;
+      margin-top: 5px;
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+    }
+    .error {
       color: red;
+      margin-top: 5px;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #1558b1;
+    }
+    button:active {
+      background-color: #0f47a1;
+    }
+    #anotherResponse {
+      margin-top: 20px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: blue;
+      text-align: center;
+    }
+    #referenceDetails {
+      margin-top: 20px;
+    }
+    #referenceTable {
+      margin-top: 10px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #referenceTable th, #referenceTable td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    @media (max-width: 600px) {
+      .form-container {
+        padding: 10px;
+      }
+      input, select, button {
+        padding: 10px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Referral Form</h1>
-  <form id="referralForm">
-    <label for="userName">Name:</label>
-    <input type="text" id="userName" required><br><br>
-
-    <label for="mobileNumber">Mobile Number:</label>
-    <input type="tel" id="mobileNumber" required><br><br>
-
-    <label for="userLanguage">Language:</label>
-    <select id="userLanguage" required>
-      <option value="English">English</option>
-      <option value="Spanish">Spanish</option>
-      <!-- Add other options as needed -->
-    </select><br><br>
-
-    <label for="resourceCount">Number of Resources:</label>
-    <input type="number" id="resourceCount" min="1" required><br><br>
-
-    <div id="referenceDetails">
-      <h2>References</h2>
-      <table id="referenceTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Language</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="text" required></td>
-            <td><input type="tel" required></td>
-            <td>
-              <select required>
-                <option value="English">English</option>
-                <option value="Spanish">Spanish</option>
-                <!-- Add other options as needed -->
-              </select>
-            </td>
-          </tr>
-          <!-- Add more rows as needed -->
-        </tbody>
-      </table>
-      <button type="button" id="addReference">Add Another Reference</button>
-    </div>
-    <br>
-    <button type="submit">Submit</button>
-  </form>
-
-  <div id="submissionSuccess">
-    <p>Form submitted successfully.</p>
-    <p>If you want to submit another form, please <span id="anotherResponse">click here</span>.</p>
+  <div class="header">
+    <span>Karya</span>
   </div>
+  <div class="form-container">
+    <h2>BMGF Referral Form</h2>
+    <p>Please enter your details and the details of your References</p>
+    <form id="referralForm">
+      <label for="userName">Your Name</label>
+      <input type="text" id="userName" placeholder="Please enter your name" required>
+      <div id="userNameError" class="error"></div>
 
-  <div id="error">
-    <p>Error submitting the form. Please try again.</p>
+      <label for="mobileNumber">Your Mobile Number (registered in Karya app)</label>
+      <input type="text" id="mobileNumber" placeholder="Please enter your 10 digit mobile number" required>
+      <div id="mobileNumberError" class="error"></div>
+
+      <label for="userLanguage">Your Language</label>
+      <select id="userLanguage" required>
+        <option value="" disabled selected>Please select your language</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Marathi">Marathi</option>
+        <option value="Malayalam">Malayalam</option>
+        <option value="Telugu">Telugu</option>
+        <option value="Bhojpuri">Bhojpuri</option>
+        <option value="Bengali">Bengali</option>
+      </select>
+
+      <label for="resourceCount">How many resources you can refer?</label>
+      <input type="number" id="resourceCount" placeholder="Please enter a number between 1 to 100" min="1" max="100" required>
+      <div id="resourceCountError" class="error"></div>
+
+      <div id="referenceDetails" style="display: none;">
+        <label>Please enter your reference details below</label>
+        <table id="referenceTable">
+          <thead>
+            <tr>
+              <th>Reference Name</th>
+              <th>Phone Number</th>
+              <th>Language</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div id="submissionSuccess" style="display:none;">
+      <p>Form submitted successfully.</p>
+      <p>If you want to submit another form, please <span id="anotherResponse">click here</span>.</p>
+    </div>
   </div>
 
   <script>
-    document.getElementById('referralForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    document.getElementById('resourceCount').addEventListener('change', function() {
+      const resourceCount = parseInt(this.value);
+      const tbody = document.getElementById('referenceTable').querySelector('tbody');
+      tbody.innerHTML = '';  // Clear existing rows
 
-      // Gather form data
+      if (resourceCount >= 1 && resourceCount <= 100) {
+        document.getElementById('referenceDetails').style.display = 'block'; // Show references section
+
+        for (let i = 0; i < resourceCount; i++) {
+          const row = document.createElement('tr');
+
+          const cell1 = document.createElement('td');
+          const input1 = document.createElement('input');
+          input1.type = 'text';
+          input1.placeholder = `Reference ${i + 1} Name`;
+          input1.required = true;
+          input1.setAttribute('data-ref', `refName${i}`);
+          cell1.appendChild(input1);
+
+          const cell2 = document.createElement('td');
+          const input2 = document.createElement('input');
+          input2.type = 'text';
+          input2.placeholder = `Reference ${i + 1} Phone Number`;
+          input2.required = true;
+          input2.setAttribute('data-ref', `refPhone${i}`);
+          cell2.appendChild(input2);
+
+          const cell3 = document.createElement('td');
+          const select = document.createElement('select');
+          select.required = true;
+          select.setAttribute('data-ref', `refLang${i}`);
+
+          const options = ['Hindi', 'Marathi', 'Malayalam', 'Telugu', 'Bhojpuri', 'Bengali'];
+          options.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option;
+            opt.textContent = option;
+            select.appendChild(opt);
+          });
+
+          cell3.appendChild(select);
+
+          row.appendChild(cell1);
+          row.appendChild(cell2);
+          row.appendChild(cell3);
+
+          tbody.appendChild(row);
+        }
+      } else {
+        document.getElementById('referenceDetails').style.display = 'none'; // Hide references section
+      }
+    });
+
+    document.getElementById('referralForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      // Validate fields
+      const errors = [];
+      if (!document.getElementById('userName').value.trim()) {
+        errors.push('Name is required.');
+      }
+      if (!document.getElementById('mobileNumber').value.trim()) {
+        errors.push('Mobile Number is required.');
+      }
+      if (!document.getElementById('resourceCount').value.trim()) {
+        errors.push('Number of resources is required.');
+      }
+
+      if (errors.length > 0) {
+        errors.forEach(error => {
+          alert(error);
+        });
+        return;
+      }
+      
       const formData = {
-        userName: document.getElementById('userName').value.trim(),
-        mobileNumber: document.getElementById('mobileNumber').value.trim(),
+        userName: document.getElementById('userName').value,
+        mobileNumber: document.getElementById('mobileNumber').value,
         userLanguage: document.getElementById('userLanguage').value,
-        resourceCount: parseInt(document.getElementById('resourceCount').value),
-        references: getReferences()
+        resourceCount: document.getElementById('resourceCount').value,
+        references: []
       };
 
-      // Submit the form data
-      fetch('https://script.google.com/macros/s/AKfycbwGF_mQFQRyXSFS2500poLQKyhBQZ8ABSu6hy4VyyKGahEWcU6RkZy5dXojQFLlDFTQDA/exec', {
+      const rows = document.querySelectorAll('#referenceTable tbody tr');
+      rows.forEach(row => {
+        const name = row.querySelector('input[data-ref^="refName"]').value;
+        const phone = row.querySelector('input[data-ref^="refPhone"]').value;
+        const language = row.querySelector('select[data-ref^="refLang"]').value;
+
+        if (name && phone && language) {
+          formData.references.push({ name, phone, language });
+        }
+      });
+
+      fetch('https://script.google.com/macros/s/AKfycbynksMGJ_sNrckaAYtqki6x260C5_kAz4KoRC1CO8ab4tKGY3IXRqXCKQsJan4wPPC9eA/exec', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData)
       })
       .then(response => response.text())
       .then(result => {
+        console.log(result);
+        document.getElementById('referralForm').reset();
+        document.getElementById('referenceDetails').style.display = 'none';
         document.getElementById('submissionSuccess').style.display = 'block';
-        document.getElementById('referralForm').style.display = 'none';
-        document.getElementById('error').style.display = 'none';
       })
-      .catch(error => {
-        console.error('Error submitting the form:', error);
-        document.getElementById('error').style.display = 'block';
-      });
+      .catch(error => console.error('Error:', error));
     });
-
-    function getReferences() {
-      const references = [];
-      const rows = document.getElementById('referenceTable').querySelectorAll('tbody tr');
-      rows.forEach(row => {
-        const refName = row.querySelector('td:nth-child(1) input').value.trim();
-        const refPhone = row.querySelector('td:nth-child(2) input').value.trim();
-        const refLang = row.querySelector('td:nth-child(3) select').value;
-        references.push({ name: refName, phone: refPhone, language: refLang });
-      });
-      return references;
-    }
 
     document.getElementById('anotherResponse').addEventListener('click', function() {
-      document.getElementById('referralForm').style.display = 'block';
-      document.getElementById('referralForm').reset();
-      document.getElementById('referenceDetails').style.display = 'none';
       document.getElementById('submissionSuccess').style.display = 'none';
-      document.getElementById('error').style.display = 'none';
-    });
-
-    document.getElementById('addReference').addEventListener('click', function() {
-      const tableBody = document.getElementById('referenceTable').querySelector('tbody');
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-        <td><input type="text" required></td>
-        <td><input type="tel" required></td>
-        <td>
-          <select required>
-            <option value="English">English</option>
-            <option value="Spanish">Spanish</option>
-            <!-- Add other options as needed -->
-          </select>
-        </td>
-      `;
-      tableBody.appendChild(newRow);
+      document.getElementById('referralForm').style.display = 'block';
     });
   </script>
 </body>
